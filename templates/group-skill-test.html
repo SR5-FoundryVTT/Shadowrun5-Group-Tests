@@ -6,5 +6,24 @@
         {{/each}}
     </div>
 
+    <div class="item">
+        <div class="item-text skill-spec-item">
+            <input
+                    id="filter-skills"
+                    class="display text left"
+                    type="text"
+                    value="{{filters.skills}}"
+                    name="filters.skills"
+                    placeholder="Filter..."
+            />
+        </div>
+    </div>
+    <div class="grm-select">
+      <select name="select-ability" data-dtype="String">
+        {{#each skills.active as |skill sid|}}
+        <option value="{{localize skill.label}}">{{localize skill.label}}</option>
+        {{/each}}
+      </select>
+    </div>
 </form>
 

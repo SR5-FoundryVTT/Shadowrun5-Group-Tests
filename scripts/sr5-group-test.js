@@ -2,7 +2,6 @@
  * @author  taMiF
  */
 
-
 class SRGroupRollApp extends Application {
     static isOpen = false;
 
@@ -23,9 +22,17 @@ class SRGroupRollApp extends Application {
     }
 
     getData() {
+        console.error(game);
+        const token = canvas.tokens.controlled.length ? canvas.tokens.controlled[0] : undefined;
+        console.error(token);
+        const {data} = token.actor.sheet.getData();
+        const {skills} = data;
+        console.error(data);
+
         return {
             test: 'Hallo Test',
-            tokens: canvas.tokens.controlled
+            tokens: canvas.tokens.controlled,
+            skills
         }
     }
 
@@ -73,13 +80,7 @@ Hooks.on('renderTokenHUD', (...args) => {
 });
 
 Hooks.on('controlToken', (token, controlled) => {
-
-    console.error('controlToken', token, controlled);
-
-    // console.error(canvas.tokens.controlled);
     if (SRGroupRollApp.isOpen) {
         new SRGroupRollApp().render(true);
     }
 });
-
-Hooks.on()
