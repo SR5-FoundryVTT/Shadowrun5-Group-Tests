@@ -1,6 +1,10 @@
 <form autocomplete="off" onsubmit="event.preventDefault();">
 
-  {{test}}
+    <div class="grm-grid grm-tbl-cols grm-tbl-rows">
+        {{#each tokens as |token|}}
+        <div>{{token.data.name}}</div>
+        {{/each}}
+    </div>
 
 </form>
 

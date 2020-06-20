@@ -2,7 +2,15 @@
  * @author  taMiF
  */
 
+
 class SRGroupRollApp extends Application {
+    static isOpen = false;
+
+    constructor() {
+        super();
+
+        SRGroupRollApp.isOpen = true;
+    }
     static get defaultOptions() {
         const options = super.defaultOptions;
         options.width = 550;
@@ -15,11 +23,32 @@ class SRGroupRollApp extends Application {
     }
 
     getData() {
-        return {test: 'Hallo Test'}
+        return {
+            test: 'Hallo Test',
+            tokens: canvas.tokens.controlled
+        }
+    }
+
+    async handleControlToken() {
+        return (token, controlled) => {
+            this.render(true);
+        }
     }
 }
 
 const srGroupRollTokenControl = 0;
+
+const buttons = {
+    roll: {
+        label: 'Roll', // TODO: i18n
+        icon: '<i class="fas fa-bomb></i>"',
+        callback: () => {
+            test: 'Test'
+        }
+    }
+};
+
+
 
 Hooks.on('getSceneControlButtons', controls => {
     controls[srGroupRollTokenControl].tools.push({
@@ -28,8 +57,11 @@ Hooks.on('getSceneControlButtons', controls => {
         icon: 'fas fa-user-check',
         visible: game.user.isGM,
         onClick: () => {
+            // Disable selection of SR5GroupRoll Tool.
             controls[srGroupRollTokenControl].activeTool = "select";
-            if (game.system.id === 'shadowrun5e') return new SRGroupRollApp().render(true);
+            if (game.system.id === 'shadowrun5e') {
+                return new SRGroupRollApp().render(true);
+            }
         }
     })
 });
@@ -44,5 +76,10 @@ Hooks.on('controlToken', (token, controlled) => {
 
     console.error('controlToken', token, controlled);
 
-    console.error(canvas.tokens.controlled);
+    // console.error(canvas.tokens.controlled);
+    if (SRGroupRollApp.isOpen) {
+        new SRGroupRollApp().render(true);
+    }
 });
+
+Hooks.on()
