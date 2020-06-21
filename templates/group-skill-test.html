@@ -1,29 +1,17 @@
 <form autocomplete="off" onsubmit="event.preventDefault();">
+    <div class="grm-select">
+      Skill <select name="select-skill" data-dtype="String" >
+        <option value="{{null}}"></option>
+        {{#each skills.active as |skill sid|}}
+        <option value="{{sid}}">{{localize skill.label}}</option>
+        {{/each}}
+      </select>
+    </div>
 
     <div class="grm-grid grm-tbl-cols grm-tbl-rows">
         {{#each tokens as |token|}}
-        <div>{{token.data.name}}</div>
+        <div>{{token.name}} ({{token.result}})</div>
         {{/each}}
-    </div>
-
-    <div class="item">
-        <div class="item-text skill-spec-item">
-            <input
-                    id="filter-skills"
-                    class="display text left"
-                    type="text"
-                    value="{{filters.skills}}"
-                    name="filters.skills"
-                    placeholder="Filter..."
-            />
-        </div>
-    </div>
-    <div class="grm-select">
-      <select name="select-ability" data-dtype="String">
-        {{#each skills.active as |skill sid|}}
-        <option value="{{localize skill.label}}">{{localize skill.label}}</option>
-        {{/each}}
-      </select>
     </div>
 </form>
 
