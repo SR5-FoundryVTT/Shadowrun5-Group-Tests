@@ -70,14 +70,11 @@ class SRGroupRollApp extends Application {
     getData() {
         // TODO: Prepare all pools here and let doGroupRoll only react to events and roll.
 
-        console.error('getData');
-        console.error(game);
+        console.error('getData', game);
         const token = canvas.tokens.controlled.length ? canvas.tokens.controlled[0] : undefined;
 
         const data = token?.actor?.sheet?.getData();
         const skills = data?.data?.skills;
-        console.error(this.tokenResults);
-        console.error(canvas.tokens.controlled);
 
         const tokenList = [];
         const tokens = canvas.tokens.controlled;
@@ -180,6 +177,7 @@ class SRGroupRollApp extends Application {
                 const glitched = (glitchedDice / pool) >= 0.5;
 
                 this.tokenResults[token.id] = {
+                    pool,
                     netHits: roller.result,
                     success: roller.result > 0,
                     glitched: glitched
@@ -205,8 +203,10 @@ class SRGroupRollApp extends Application {
                 roller.roll();
                 const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
                 const glitched = (glitchedDice / pool) >= 0.5;
+                pool = roller.dice[0].rolls.length;
 
                 this.tokenResults[token.id] = {
+                    pool,
                     netHits: roller.result,
                     success: roller.result > 0,
                     glitched: glitched
@@ -241,6 +241,7 @@ class SRGroupRollApp extends Application {
                 const glitched = (glitchedDice / pool) >= 0.5;
 
                 this.tokenResults[token.id] = {
+                    pool,
                     netHits: roller.result,
                     success: roller.result > 0,
                     glitched: glitched

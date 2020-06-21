@@ -36,6 +36,7 @@
     <div class="grm-grid grm-tbl-cols grm-hdr">
         <div>&nbsp;</div>
         <div class="grm-name-col">Token</div>
+        <div>Pool</div>
         <div>Net-Hits</div>
         <div>Success</div>
         <div>Glitch</div>
@@ -44,6 +45,7 @@
         {{#each tokens as |token|}}
         <div>X</div>
         <div class="grm-name-col">{{token.name}}</div>
+        <div>{{token.result.pool}}</div>
         <div>{{token.result.netHits}}</div>
         <div>{{#if token.result.success}}X{{/if}}</div>
         <div>{{#if token.result.glitched}}X{{/if}}</div>
