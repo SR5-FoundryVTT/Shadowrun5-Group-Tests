@@ -76,6 +76,7 @@ class SRGroupRollApp extends Application {
         const data = token?.actor?.sheet?.getData();
         const skills = data?.data?.skills;
 
+
         const tokenList = [];
         const tokens = canvas.tokens.controlled;
         tokens.forEach(token => {
@@ -135,10 +136,32 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
+    doRoll(parts, limit = {}, explode = false) {
+        console.error('doRoll', limit);
+        // Build custom roll to avoid dialog display.
+        const {ShadowrunRoller} = game.shadowrun5e;
+        const formula = ShadowrunRoller.shadowrunFormula({parts, limit, explode});
+        if (!formula) {
+            return ;
+        }
+
+        const roller = new Roll(formula);
+        roller.roll();
+        const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
+        const pool = roller.dice[0].rolls.length;
+        const glitched = (glitchedDice / pool) >= 0.5;
+
+        return {
+            pool,
+            netHits: roller.result,
+            success: roller.result > 0,
+            glitched: glitched,
+            limit: limit.value ? limit.value : ''
+        };
+    }
+
     doGroupRoll() {
         console.error('do Group Roll');
-        const {ShadowrunRoller} = game.shadowrun5e;
-
         let pool = 0;
 
         if (this.selectedSkillId) {
@@ -148,8 +171,10 @@ class SRGroupRollApp extends Application {
             canvas.tokens.controlled.forEach(token => {
                 const {actor} = token;
                 const {data} = actor.sheet.getData();
-
                 const skill = data.skills.active[skillId];
+                if (!skill) {
+                    return;
+                }
                 const attribute = data.attributes[skill.attribute];
                 const limit = data.limits[attribute.limit];
 
@@ -160,32 +185,13 @@ class SRGroupRollApp extends Application {
                 }
 
                 if (pool <= 0) {
-                    console.error('Pool <= 0');
                     return;
                 }
 
-                // Build custom roll to avoid dialog display.
-                const formula = ShadowrunRoller.shadowrunFormula({parts: [pool], limit: limit, explode: false});
-                if (!formula) {
-                    console.error('Broken formula');
-                    return;
-                }
-
-                const roller = new Roll(formula);
-                roller.roll();
-                const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
-                const glitched = (glitchedDice / pool) >= 0.5;
-
-                this.tokenResults[token.id] = {
-                    pool,
-                    netHits: roller.result,
-                    success: roller.result > 0,
-                    glitched: glitched
-                };
+                this.tokenResults[token.id] = this.doRoll([pool], limit);
 
             });
         } else if (this.selectedRoll === 'soak') {
-            console.error('SOOOAK');
             this.tokenResults = {};
 
             canvas.tokens.controlled.forEach(token => {
@@ -193,24 +199,7 @@ class SRGroupRollApp extends Application {
                 const parts = {};
                 actor._addSoakParts(parts);
 
-                const formula = ShadowrunRoller.shadowrunFormula({parts: parts, limit: {}, explode: false});
-                if (!formula) {
-                    console.error('Broken formula');
-                    return;
-                }
-
-                const roller = new Roll(formula);
-                roller.roll();
-                const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
-                const glitched = (glitchedDice / pool) >= 0.5;
-                pool = roller.dice[0].rolls.length;
-
-                this.tokenResults[token.id] = {
-                    pool,
-                    netHits: roller.result,
-                    success: roller.result > 0,
-                    glitched: glitched
-                };
+                this.tokenResults[token.id] = this.doRoll(parts);
             });
         } else if (this.selectedRoll) {
             console.error(this.selectedRoll, canvas.tokens.controlled);
@@ -228,26 +217,7 @@ class SRGroupRollApp extends Application {
                 }
                 pool = rolls[this.selectedRoll];
 
-                // Build custom roll to avoid dialog display.
-                const formula = ShadowrunRoller.shadowrunFormula({parts: [pool], limit: {}, explode: false});
-                if (!formula) {
-                    console.error('Broken formula');
-                    return;
-                }
-
-                const roller = new Roll(formula);
-                roller.roll();
-                const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
-                const glitched = (glitchedDice / pool) >= 0.5;
-
-                this.tokenResults[token.id] = {
-                    pool,
-                    netHits: roller.result,
-                    success: roller.result > 0,
-                    glitched: glitched
-                };
-
-                console.error(token.data.name, 'ende');
+                this.tokenResults[token.id] = this.doRoll([pool]);
             })
         }
         console.error(this.tokenResults);
