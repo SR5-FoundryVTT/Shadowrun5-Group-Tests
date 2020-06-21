@@ -71,8 +71,8 @@ class SRGroupRollApp extends Application {
         // TODO: Prepare all pools here and let doGroupRoll only react to events and roll.
 
         console.error('getData', game);
+        // Use token skills instead of system template due to labels missing on system templates.
         const token = canvas.tokens.controlled.length ? canvas.tokens.controlled[0] : undefined;
-
         const data = token?.actor?.sheet?.getData();
         const skills = data?.data?.skills;
 
