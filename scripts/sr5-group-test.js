@@ -12,6 +12,7 @@ class SRGroupRollApp extends Application {
         super();
 
         this.selectedSkillId = null;
+        this.selectedRoll = null;
         this.tokenResults = {};
 
         SRGroupRollApp.isOpen = true;
@@ -24,18 +25,12 @@ class SRGroupRollApp extends Application {
             this.render();
         });
 
-        this._buildTokenResults = this._buildTokenResults.bind(this);
+        this.onAttributeOnlyRoll = this.onAttributeOnlyRoll.bind(this);
         this.changeSkillSelection = this.changeSkillSelection.bind(this);
+        this.onSoakRoll = this.onSoakRoll.bind(this);
+        this.onDefenseRoll = this.onDefenseRoll.bind(this);
         this.doGroupRoll = this.doGroupRoll.bind(this);
         this.getData = this.getData.bind(this);
-    }
-
-    _buildTokenResults() {
-        this.tokenResults = {};
-        canvas.tokens.controlled.forEach(token => {
-            this.tokenResults[token.id] = null;
-            console.error(this.tokenResults);
-        });
     }
 
     _getHeaderButtons() {
@@ -45,7 +40,7 @@ class SRGroupRollApp extends Application {
                 label: "Roll",
                 class: "grm-btn-roll",
                 title: "Roll for all selected tokens\nShift: Output rolls to chat\nCtrl: Keep same rolls",
-                icon: "fas fa-dice-d20",
+                icon: "fas fa-dice-six",
                 onclick: event => {
                     if (event.ctrlKey) {
                         console.error('TODO: output current roll to chat');
@@ -73,7 +68,10 @@ class SRGroupRollApp extends Application {
     }
 
     getData() {
+        // TODO: Prepare all pools here and let doGroupRoll only react to events and roll.
+
         console.error('getData');
+        console.error(game);
         const token = canvas.tokens.controlled.length ? canvas.tokens.controlled[0] : undefined;
 
         const data = token?.actor?.sheet?.getData();
@@ -103,6 +101,29 @@ class SRGroupRollApp extends Application {
         super.activateListeners(html);
 
         html.find('[name="select-skill"]').change(this.changeSkillSelection);
+        html.find('.attribute-only-roll').click(this.onAttributeOnlyRoll);
+        html.find('.soak-roll').click(this.onSoakRoll);
+        html.find('.defense-roll').click(this.onDefenseRoll);
+    }
+
+    onAttributeOnlyRoll(event) {
+        console.error('onAttributeOnlyRoll', event);
+        const {roll} = event.currentTarget.dataset;
+        this.selectedRoll = roll;
+        this.selectedSkillId = null;
+        this.doGroupRoll();
+    }
+
+    onSoakRoll(event) {
+        this.selectedRoll = 'soak';
+        this.selectedSkillId = null;
+        this.doGroupRoll();
+    }
+
+    onDefenseRoll(event) {
+        this.selectedRoll = 'defense';
+        this.selectedSkillId = null;
+        this.doGroupRoll();
     }
 
     changeSkillSelection(event) {
@@ -112,14 +133,20 @@ class SRGroupRollApp extends Application {
             return;
         }
         this.selectedSkillId = skillId;
+        this.selectedRoll = null;
+
+        this.doGroupRoll();
     }
 
     doGroupRoll() {
         console.error('do Group Roll');
-        console.error(game.shadowrun5e);
         const {ShadowrunRoller} = game.shadowrun5e;
 
+        let pool = 0;
+
         if (this.selectedSkillId) {
+            console.error('selectedSkill');
+            this.tokenResults = {};
             const skillId = this.selectedSkillId;
             canvas.tokens.controlled.forEach(token => {
                 const {actor} = token;
@@ -127,8 +154,8 @@ class SRGroupRollApp extends Application {
 
                 const skill = data.skills.active[skillId];
                 const attribute = data.attributes[skill.attribute];
+                const limit = data.limits[attribute.limit];
 
-                let pool = 0;
                 if (skill.value > 0) {
                     pool = attribute.value + skill.value;
                 } else if (skill.value === 0 && skill.canDefault) {
@@ -141,6 +168,67 @@ class SRGroupRollApp extends Application {
                 }
 
                 // Build custom roll to avoid dialog display.
+                const formula = ShadowrunRoller.shadowrunFormula({parts: [pool], limit: limit, explode: false});
+                if (!formula) {
+                    console.error('Broken formula');
+                    return;
+                }
+
+                const roller = new Roll(formula);
+                roller.roll();
+                const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
+                const glitched = (glitchedDice / pool) >= 0.5;
+
+                this.tokenResults[token.id] = {
+                    netHits: roller.result,
+                    success: roller.result > 0,
+                    glitched: glitched
+                };
+
+            });
+        } else if (this.selectedRoll === 'soak') {
+            console.error('SOOOAK');
+            this.tokenResults = {};
+
+            canvas.tokens.controlled.forEach(token => {
+                const {actor} = token;
+                const parts = {};
+                actor._addSoakParts(parts);
+
+                const formula = ShadowrunRoller.shadowrunFormula({parts: parts, limit: {}, explode: false});
+                if (!formula) {
+                    console.error('Broken formula');
+                    return;
+                }
+
+                const roller = new Roll(formula);
+                roller.roll();
+                const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
+                const glitched = (glitchedDice / pool) >= 0.5;
+
+                this.tokenResults[token.id] = {
+                    netHits: roller.result,
+                    success: roller.result > 0,
+                    glitched: glitched
+                };
+            });
+        } else if (this.selectedRoll) {
+            console.error(this.selectedRoll, canvas.tokens.controlled);
+            this.tokenResults = {};
+
+            canvas.tokens.controlled.forEach(token => {
+                const {actor} = token;
+                const {data} = actor.sheet.getData();
+                const {rolls} = data;
+
+                console.error(rolls, data);
+
+                if (!rolls[this.selectedRoll]) {
+                    return;
+                }
+                pool = rolls[this.selectedRoll];
+
+                // Build custom roll to avoid dialog display.
                 const formula = ShadowrunRoller.shadowrunFormula({parts: [pool], limit: {}, explode: false});
                 if (!formula) {
                     console.error('Broken formula');
@@ -149,13 +237,19 @@ class SRGroupRollApp extends Application {
 
                 const roller = new Roll(formula);
                 roller.roll();
+                const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
+                const glitched = (glitchedDice / pool) >= 0.5;
 
-                const {result} = roller;
+                this.tokenResults[token.id] = {
+                    netHits: roller.result,
+                    success: roller.result > 0,
+                    glitched: glitched
+                };
 
-                this.tokenResults[token.id] = result;
-            });
+                console.error(token.data.name, 'ende');
+            })
         }
-
+        console.error(this.tokenResults);
         this.render();
     }
 }

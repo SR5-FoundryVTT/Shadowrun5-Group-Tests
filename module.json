@@ -9,6 +9,7 @@
   "scripts": [
     "scripts/sr5-group-test.js"
   ],
+  "styles": ["./css/sr5grouproll.css"],
   "system": "shadowrun5e",
   "manifest": "https://raw.githubusercontent.com/taMiF/SR5-FoundryVTT-Group-Tests/master/module.json",
   "url": "https://github.com/taMiF/SR5-FoundryVTT-Group-Tests",

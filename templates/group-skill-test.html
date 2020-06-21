@@ -1,16 +1,52 @@
 <form autocomplete="off" onsubmit="event.preventDefault();">
-    <div class="grm-select">
-      Skill <select name="select-skill" data-dtype="String" >
-        <option value="{{null}}"></option>
-        {{#each skills.active as |skill sid|}}
-        <option value="{{sid}}">{{localize skill.label}}</option>
-        {{/each}}
-      </select>
+    <div class="grm-grid grm-grid-common">
+        <div class="attribute-only-roll roll attribute-name" data-roll="composure">
+            {{localize "SR5.RollComposure"}}
+        </div>
+        <div class="attribute-only-roll roll attribute-name" data-roll="judge_intentions">
+            {{localize "SR5.RollJudgeIntentions"}}
+        </div>
+        <div class="attribute-only-roll roll attribute-name" data-roll="lift_carry">
+            {{localize "SR5.RollLiftCarry"}}
+        </div>
+        <div class="attribute-only-roll roll attribute-name" data-roll="memory">
+            {{localize "SR5.RollMemory"}}
+        </div>
+        <div title="Defense" class="defense-roll roll attribute-name">
+            {{localize "SR5.RollDefense"}}
+        </div>
+        <div title="Soak" class="soak-roll roll attribute-name">
+            {{localize "SR5.RollSoak"}}
+        </div>
     </div>
 
+    <div class="grm-grid">
+        <div class="grm-label">Skill</div>
+        <div class="grm-select">
+            <select name="select-skill" data-dtype="String">
+                <option value="{{null}}"></option>
+                {{#each skills.active as |skill sid|}}
+                <option value="{{sid}}">{{localize skill.label}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div></div>
+    </div>
+
+    <div class="grm-grid grm-tbl-cols grm-hdr">
+        <div>&nbsp;</div>
+        <div class="grm-name-col">Token</div>
+        <div>Net-Hits</div>
+        <div>Success</div>
+        <div>Glitch</div>
+    </div>
     <div class="grm-grid grm-tbl-cols grm-tbl-rows">
         {{#each tokens as |token|}}
-        <div>{{token.name}} ({{token.result}})</div>
+        <div>X</div>
+        <div class="grm-name-col">{{token.name}}</div>
+        <div>{{token.result.netHits}}</div>
+        <div>{{#if token.result.success}}X{{/if}}</div>
+        <div>{{#if token.result.glitched}}X{{/if}}</div>
         {{/each}}
     </div>
 </form>
