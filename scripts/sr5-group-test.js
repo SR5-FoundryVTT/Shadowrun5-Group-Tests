@@ -19,6 +19,7 @@ class SRGroupRollApp extends Application {
         this.tokenResults = {};
 
         this.threshold = 0;
+        this.modifier = 0;
 
         this.tokens = [];
 
@@ -98,11 +99,13 @@ class SRGroupRollApp extends Application {
                 skillList.push({...skill, id: skillId, selected: skillId === this.selectedSkillId});
             });
         }
+
         return {
             test: 'Hallo Test',
             tokens: tokenList,
             skills: skillList,
             threshold: this.threshold,
+            modifier: this.modifier,
             selectedSkillId: this.selectedSkillId
         }
     }
@@ -122,6 +125,7 @@ class SRGroupRollApp extends Application {
         html.find('.magic-manipulation').click(this.onManipulationRoll);
         html.find('.magic-perception-active').click(this.onPerceptionActiveRoll);
         html.find('[name=input-threshold]').change(this.onThresholdChange);
+        html.find('[name=input-modifier]').change(this.onModifierChange);
     }
 
     resetRollData = () => {
@@ -243,6 +247,12 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     };
 
+    onModifierChange = (event) => {
+        this.modifier = Number(event.currentTarget.value);
+
+        this.doGroupRoll();
+    };
+
     doRoll(parts, limit = {}, explode = false) {
         // Build custom roll to avoid dialog display.
         const {ShadowrunRoller} = game.shadowrun5e;
@@ -283,7 +293,7 @@ class SRGroupRollApp extends Application {
             console.error('selectedSkill');
             this.tokenResults = {};
             const skillId = this.selectedSkillId;
-            canvas.tokens.controlled.forEach(token => {
+            this.tokens.forEach(token => {
                 const {actor} = token;
                 const {data} = actor.sheet.getData();
                 const skill = data.skills.active[skillId];
@@ -303,16 +313,20 @@ class SRGroupRollApp extends Application {
                     return;
                 }
 
-                this.tokenResults[token.id] = this.doRoll([pool], limit);
+                this.tokenResults[token.id] = this.doRoll([pool, this.modifier], limit);
 
             });
         } else if (this.selectedRoll === 'soak') {
             this.tokenResults = {};
 
-            canvas.tokens.controlled.forEach(token => {
+            this.tokens.forEach(token => {
                 const {actor} = token;
                 const parts = {};
                 actor._addSoakParts(parts);
+
+                if (this.modifier) {
+                    parts['Modifier'] = this.modifier;
+                }
 
                 this.tokenResults[token.id] = this.doRoll(parts);
             });
@@ -320,7 +334,7 @@ class SRGroupRollApp extends Application {
             console.error('this.selectedRoll');
             this.tokenResults = {};
 
-            canvas.tokens.controlled.forEach(token => {
+            this.tokens.forEach(token => {
                 const {actor} = token;
                 const {data} = actor.sheet.getData();
                 const {rolls} = data;
@@ -330,7 +344,7 @@ class SRGroupRollApp extends Application {
                 }
                 pool = rolls[this.selectedRoll];
 
-                this.tokenResults[token.id] = this.doRoll([pool]);
+                this.tokenResults[token.id] = this.doRoll([pool, this.modifier]);
             })
         } else if (this.selectedAttributesRoll) {
             console.error('selectedAttributes', this.selectedAttributesRoll);
@@ -343,6 +357,10 @@ class SRGroupRollApp extends Application {
                     const attribute = actor.findAttribute(selectedAttribute)
                     parts[attribute.label] = attribute.value;
                 });
+
+                if (this.modifier) {
+                    parts['Modifier'] = this.modifier;
+                }
 
                 this.tokenResults[token.id] = this.doRoll(parts);
             });
