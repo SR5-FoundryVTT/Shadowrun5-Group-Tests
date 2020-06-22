@@ -34,8 +34,8 @@
         <div class="grm-select">
             <select name="select-skill" data-dtype="String">
                 <option value="{{null}}"></option>
-                {{#each skills.active as |skill sid|}}
-                <option value="{{sid}}">{{localize skill.label}}</option>
+                {{#each skills as |skill|}}
+                <option value="{{skill.id}}" {{#if skill.selected}}selected{{/if}}>{{localize skill.label}}</option>
                 {{/each}}
             </select>
         </div>

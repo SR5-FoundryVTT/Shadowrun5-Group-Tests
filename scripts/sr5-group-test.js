@@ -74,8 +74,6 @@ class SRGroupRollApp extends Application {
     }
 
     getData() {
-        // TODO: Prepare all pools here and let doGroupRoll only react to events and roll.
-
         console.error('getData', game);
         // Use token skills instead of system template due to labels missing on system templates.
         const token = canvas.tokens.controlled.length ? canvas.tokens.controlled[0] : undefined;
@@ -93,10 +91,17 @@ class SRGroupRollApp extends Application {
             })
         });
 
+        const skillList = [];
+        Object.keys(skills.active).forEach(skillId => {
+            const skill = skills.active[skillId];
+            skillList.push({...skill, id: skillId, selected: skillId === this.selectedSkillId});
+        });
+        console.error(skillList);
+
         return {
             test: 'Hallo Test',
             tokens: tokenList,
-            skills,
+            skills: skillList,
             selectedSkillId: this.selectedSkillId
         }
     }
