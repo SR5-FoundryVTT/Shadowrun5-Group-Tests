@@ -22,6 +22,7 @@ class SRGroupRollApp extends Application {
         this.modifier = 0;
 
         this.tokens = [];
+        this.favoriteSkills = {'perception': null};
 
         SRGroupRollApp.isOpen = true;
 
@@ -109,6 +110,9 @@ class SRGroupRollApp extends Application {
             Object.keys(skills.active).forEach(skillId => {
                 const skill = skills.active[skillId];
                 skillList.push({...skill, id: skillId, selected: skillId === this.selectedSkillId});
+                if (this.favoriteSkills.hasOwnProperty(skillId)) {
+                    this.favoriteSkills[skillId] = {...skill, id: skillId, selected: skillId === this.selectedSkillId};
+                }
             });
         }
 
@@ -116,6 +120,7 @@ class SRGroupRollApp extends Application {
             test: 'Hallo Test',
             tokens: tokenList,
             skills: skillList,
+            favSkills: Object.values(this.favoriteSkills),
             threshold: this.threshold,
             modifier: this.modifier,
             selectedSkillId: this.selectedSkillId
@@ -126,6 +131,7 @@ class SRGroupRollApp extends Application {
         super.activateListeners(html);
 
         html.find('[name="select-skill"]').change(this.changeSkillSelection);
+        html.find('[name="select-fav-skill"]').change(this.changeSkillSelection);
         html.find('.attribute-only-roll').click(this.onAttributeOnlyRoll);
         html.find('.surprise-roll').click(this.onSurpriseRoll);
         html.find('.soak-roll').click(this.onSoakRoll);

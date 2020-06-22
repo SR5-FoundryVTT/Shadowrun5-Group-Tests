@@ -48,6 +48,15 @@
                 {{/each}}
             </select>
         </div>
+        <div class="grm-label">Fav. Skill</div>
+        <div class="grm-select">
+            <select name="select-fav-skill" data-dtype="String">
+                <option value="{{null}}"></option>
+                {{#each favSkills as |skill|}}
+                <option value="{{skill.id}}" {{#if skill.selected}}selected{{/if}}>{{localize skill.label}}</option>
+                {{/each}}
+            </select>
+        </div>
         <div></div>
     </div>
 
