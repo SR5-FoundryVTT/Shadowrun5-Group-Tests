@@ -35,6 +35,14 @@ class SRGroupRollApp extends Application {
             this.render();
         });
 
+        Hooks.on('updateToken', async () => {
+            // NOTE: Only if this is reread will getData actually have current data.
+            // Unsure as to what two-way-databinding mechanism does this... but it's needed.
+            // If left out render() will not display controlled tokens correctly.
+            await canvas.tokens.controlled;
+            this.render();
+        });
+
         this.onAttributeOnlyRoll = this.onAttributeOnlyRoll.bind(this);
         this.changeSkillSelection = this.changeSkillSelection.bind(this);
         this.doGroupRoll = this.doGroupRoll.bind(this);
