@@ -92,11 +92,12 @@ class SRGroupRollApp extends Application {
         });
 
         const skillList = [];
-        Object.keys(skills.active).forEach(skillId => {
-            const skill = skills.active[skillId];
-            skillList.push({...skill, id: skillId, selected: skillId === this.selectedSkillId});
-        });
-
+        if (skills) {
+            Object.keys(skills.active).forEach(skillId => {
+                const skill = skills.active[skillId];
+                skillList.push({...skill, id: skillId, selected: skillId === this.selectedSkillId});
+            });
+        }
         return {
             test: 'Hallo Test',
             tokens: tokenList,
@@ -166,7 +167,7 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
-    onIllusionManaRoll = (event)=> {
+    onIllusionManaRoll = (event) => {
         this.resetRollData();
 
         this.selectedAttributesRoll = {};
@@ -176,7 +177,7 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
-    onIllusionPhysicalRoll = (event)=> {
+    onIllusionPhysicalRoll = (event) => {
         this.resetRollData();
 
         this.selectedAttributesRoll = {};
@@ -186,7 +187,7 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
-    onCombatDirectManaRoll = (event)=> {
+    onCombatDirectManaRoll = (event) => {
         this.resetRollData();
 
         this.selectedAttributesRoll = {};
@@ -195,7 +196,7 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
-    onCombatDirectPhysicalRoll = (event)=> {
+    onCombatDirectPhysicalRoll = (event) => {
         this.resetRollData();
 
         this.selectedAttributesRoll = {};
@@ -204,7 +205,7 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
-    onManipulationRoll = (event)=> {
+    onManipulationRoll = (event) => {
         this.resetRollData();
 
         this.selectedAttributesRoll = {};
@@ -214,7 +215,7 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
-    onPerceptionActiveRoll = (event)=> {
+    onPerceptionActiveRoll = (event) => {
         this.resetRollData();
 
         this.selectedAttributesRoll = {};
@@ -262,7 +263,7 @@ class SRGroupRollApp extends Application {
         const glitchedDice = roller.dice[0].rolls.filter(({roll}) => roll === 1).length;
         const pool = roller.dice[0].rolls.length;
         const glitched = (glitchedDice / pool) >= 0.5;
-        const netHits = this.threshold > roller.result? 0 : roller.result - this.threshold;
+        const netHits = this.threshold > roller.result ? 0 : roller.result - this.threshold;
 
         return {
             pool,
