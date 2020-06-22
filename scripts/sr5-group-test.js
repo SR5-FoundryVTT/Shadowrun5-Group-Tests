@@ -77,10 +77,11 @@ class SRGroupRollApp extends Application {
     static get defaultOptions() {
         const options = super.defaultOptions;
         options.width = 550;
-        options.height = "auto";
-        options.resizable = false;
+        options.height = "auto"; // TODO: Give pixel height allow for resize on more selection.
+        options.resizable = true;
         options.id = "group-skill-test";
         options.title = "Group Skill Test";
+        options.classes = ['sr5', 'srGroupRoll'];
         options.template = "modules/sr5-group-test/templates/group-skill-test.html";
         return options;
     }
@@ -99,6 +100,7 @@ class SRGroupRollApp extends Application {
             tokenList.push({
                 id: token.id,
                 name: token.data.name,
+                actor: token.actor,
                 // blank for zero wounds.
                 wounds:  wounds ? wounds : '',
                 result: this.tokenResults[token.id]

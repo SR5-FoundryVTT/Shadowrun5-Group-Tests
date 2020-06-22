@@ -1,101 +1,186 @@
 <form autocomplete="off" onsubmit="event.preventDefault();">
-    <div class="grm-grid grm-grid-common">
-        <div class="attribute-only-roll roll attribute-name" data-roll="composure">
-            {{localize "SR5.RollComposure"}}
+    <div class="inventory">
+        <div class="item item-section">
+            <div class="item-left">
+                <div class="item-text item-name">
+                    Tests
+                </div>
+            </div>
         </div>
-        <div class="attribute-only-roll roll attribute-name" data-roll="judge_intentions">
-            {{localize "SR5.RollJudgeIntentions"}}
-        </div>
-        <div class="attribute-only-roll roll attribute-name" data-roll="lift_carry">
-            {{localize "SR5.RollLiftCarry"}}
-        </div>
-        <div class="attribute-only-roll roll attribute-name" data-roll="memory">
-            {{localize "SR5.RollMemory"}}
-        </div>
-    </div>
 
-    <div class="grm-grid grm-grid-combat">
-        <div title="Surprise" class="surprise-roll roll attribute-name">
-            Surprise
+        <div class="grm-grid grm-grid-common attributes">
+            <div class="attribute-only-roll roll attribute-name" data-roll="composure">
+                <button class="display">{{localize "SR5.RollComposure"}}</button>
+            </div>
+            <div class="attribute-only-roll roll attribute-name" data-roll="judge_intentions">
+                <button class="display">{{localize "SR5.RollJudgeIntentions"}}</button>
+            </div>
+            <div class="attribute-only-roll roll attribute-name" data-roll="lift_carry">
+                <button class="display">{{localize "SR5.RollLiftCarry"}}</button>
+            </div>
+            <div class="attribute-only-roll roll attribute-name" data-roll="memory">
+                <button class="display">{{localize "SR5.RollMemory"}}</button>
+            </div>
         </div>
-        <div title="Defense" class="defense-roll roll attribute-name">
-            {{localize "SR5.RollDefense"}}
-        </div>
-        <div title="Soak" class="soak-roll roll attribute-name">
-            {{localize "SR5.RollSoak"}}
-        </div>
-        <div title="Toxins" class="toxins-roll roll attribute-name">
-            Toxins
-        </div>
-    </div>
 
-    <div class="grm-grid grm-grid-magic">
-        <div class="magic-illusion-mana roll attribute-name">Illusion (Mana)</div>
-        <div class="magic-illusion-physical roll attribute-name">Illusion (Physical)</div>
-        <div class="magic-combat-direct-mana roll attribute-name">Combat (Direct Mana)</div>
-        <div class="magic-combat-direct-physical roll attribute-name">Combat (Direct Physical)</div>
-        <div class="magic-manipulation roll attribute-name">Manipulation</div>
-        <div class="magic-perception-active roll attribute-name">Perception (Active)</div>
-    </div>
+        <div class="grm-grid grm-grid-combat">
+            <div title="Surprise" class="surprise-roll roll attribute-name">
+                <button class="display">Surprise</button>
+            </div>
+            <div title="Defense" class="defense-roll roll attribute-name">
+                <button class="display">{{localize "SR5.RollDefense"}}</button>
+            </div>
+            <div title="Soak" class="soak-roll roll attribute-name">
+                <button class="display">{{localize "SR5.RollSoak"}}</button>
+            </div>
+            <div title="Toxins" class="toxins-roll roll attribute-name">
+                <button class="display">Toxins</button>
+            </div>
+        </div>
 
-    <div class="grm-grid">
-        <div class="grm-label">Skill</div>
-        <div class="grm-select">
-            <select name="select-skill" data-dtype="String">
-                <option value="{{null}}"></option>
-                {{#each skills as |skill|}}
-                <option value="{{skill.id}}" {{#if skill.selected}}selected{{/if}}>{{localize skill.label}}</option>
-                {{/each}}
-            </select>
+        <div class="item item-section">
+            <div class="item-left">
+                <div class="item-text item-name">
+                    Magic
+                </div>
+            </div>
         </div>
-        <div class="grm-label">Fav. Skill</div>
-        <div class="grm-select">
-            <select name="select-fav-skill" data-dtype="String">
-                <option value="{{null}}"></option>
-                {{#each favSkills as |skill|}}
-                <option value="{{skill.id}}" {{#if skill.selected}}selected{{/if}}>{{localize skill.label}}</option>
-                {{/each}}
-            </select>
-        </div>
-        <div></div>
-    </div>
 
-    <div class="grm-grid">
-        <div class="grm-label">Threshold</div>
-        <div class="grm-roll">
-            <span class="threshold-value">
-                <input name="input-threshold" value="{{threshold}}" type="text" style="width: 2em; text-align: center">
-            </span>
+        <div class="grm-grid grm-grid-combat">
+            <div class="magic-illusion-mana roll attribute-name">
+                <button class="display">Illusion (M.)</button>
+            </div>
+            <div class="magic-illusion-physical roll attribute-name">
+                <button class="display">Illusion (P.)</button>
+            </div>
+            <div class="magic-combat-direct-mana roll attribute-name">
+                <button class="display">Combat (D. M.)</button>
+            </div>
+            <div class="magic-combat-direct-physical roll attribute-name">
+                <button class="display">Combat (D. P.)</button>
+            </div>
         </div>
-        <div class="grm-label">Modifier</div>
-        <div class="grm-roll">
-            <span class="threshold-value">
-                <input name="input-modifier" value="{{modifier}}" type="text" style="width: 2em; text-align: center">
-            </span>
-        </div>
-    </div>
 
-    <div class="grm-grid grm-tbl-cols grm-hdr">
-        <div class="grm-name-col">Token</div>
-        <div>Wounds</div>
-        <div>Pool</div>
-        <div>Limit</div>
-        <div>Hits</div>
-        <div>Net-Hits</div>
-        <div>Success</div>
-        <div>Glitch</div>
-    </div>
-    <div class="grm-grid grm-tbl-cols grm-tbl-rows">
-        {{#each tokens as |token|}}
-        <div class="grm-name-col">{{token.name}}</div>
-        <div>{{token.wounds}}</div>
-        <div>{{token.result.pool}}</div>
-        <div>{{token.result.limit}}</div>
-        <div>{{token.result.hits}}</div>
-        <div>{{token.result.netHits}}</div>
-        <div>{{#if token.result.success}}X{{/if}}</div>
-        <div>{{#if token.result.glitched}}X{{/if}}</div>
-        {{/each}}
+        <div class="grm-grid grm-grid-combat">
+            <div class="magic-manipulation roll attribute-name">
+                <button class="display">Manipulation</button>
+            </div>
+            <div class="magic-perception-active roll attribute-name">
+                <button class="display">Perception (A.)</button>
+            </div>
+        </div>
+
+        <div class="item item-section">
+            <div class="item-left">
+                <div class="item-text item-name">
+                    Skills
+                </div>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-left">
+                <div class="item-text item-name">Active</div>
+            </div>
+            <div class="item-left">
+                <select class="display" name="select-skill" data-dtype="String">
+                    <option value="{{null}}"></option>
+                    {{#each skills as |skill|}}
+                    <option value="{{skill.id}}" {{#if skill.selected}}selected{{/if}}>{{localize skill.label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="item-left">
+                <div class="item-text item-name">Favorites</div>
+            </div>
+            <div class="item-left">
+                <select class="display" name="select-fav-skill" data-dtype="String">
+                    <option value="{{null}}"></option>
+                    {{#each favSkills as |skill|}}
+                    <option value="{{skill.id}}" {{#if skill.selected}}selected{{/if}}>{{localize skill.label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+
+        <div class="item item-section">
+            <div class="item-left">
+                <div class="item-text item-name">
+                    For all tests
+                </div>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="item-left">
+                <div class="item-text item-name">Threshold</div>
+            </div>
+            <div class="item-left">
+                <div class="item-text">
+                    <input name="input-threshold"
+                            class="display"
+                            size="3"
+                            type="text"
+                            data-dtype="Number"
+                            value="{{threshold}}"
+                            placeholder="0"
+                        />
+                </div>
+            </div>
+            <div class="item-left">
+                <div class="item-text item-name">Modifier</div>
+            </div>
+            <div class="item-left">
+                <div class="item-text">
+                    <input name="input-modifier"
+                            class="display"
+                            size="3"
+                            type="text"
+                            data-dtype="Number"
+                            value="{{modifier}}"
+                            placeholder="0"
+                        />
+                </div>
+            </div>
+        </div>
+
+        <div class="item item-section">
+            <div class="item-left">
+                <div class="item-text item-name">
+                    Actors
+                </div>
+            </div>
+        </div>
+
+        <div class="grm-grid grm-tbl-cols grm-hdr">
+            <div></div>
+            <div class="grm-name-col">Token</div>
+            <div>Wounds</div>
+            <div>Pool</div>
+            <div>Limit</div>
+            <div>Hits</div>
+            <div>Net-Hits</div>
+            <div>Success</div>
+            <div>Glitch</div>
+        </div>
+        <div class="grm-grid grm-tbl-cols grm-tbl-rows">
+            {{#each tokens as |token|}}
+            <div>
+                <img src="{{token.actor.img}}"
+                     title="{{token.name}}"
+                     height="20px"
+                     width="20px"/>
+            </div>
+            <div class="grm-name-col">{{token.name}}</div>
+            <div>{{token.wounds}}</div>
+            <div>{{token.result.pool}}</div>
+            <div>{{token.result.limit}}</div>
+            <div>{{token.result.hits}}</div>
+            <div>{{token.result.netHits}}</div>
+            <div>{{#if token.result.success}}X{{/if}}</div>
+            <div>{{#if token.result.glitched}}X{{/if}}</div>
+            {{/each}}
+        </div>
     </div>
 </form>
 
