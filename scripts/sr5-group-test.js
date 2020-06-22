@@ -18,6 +18,8 @@ class SRGroupRollApp extends Application {
         this.selectedAttributesRoll = null;
         this.tokenResults = {};
 
+        this.threshold = 0;
+
         this.tokens = [];
 
 
@@ -102,6 +104,7 @@ class SRGroupRollApp extends Application {
             test: 'Hallo Test',
             tokens: tokenList,
             skills: skillList,
+            threshold: this.threshold,
             selectedSkillId: this.selectedSkillId
         }
     }
@@ -119,6 +122,7 @@ class SRGroupRollApp extends Application {
         html.find('.magic-combat-direct-physical').click(this.onCombatDirectPhysicalRoll);
         html.find('.magic-manipulation').click(this.onManipulationRoll);
         html.find('.magic-perception-active').click(this.onPerceptionActiveRoll);
+        html.find('[name=input-threshold]').change(this.onThresholdChange);
     }
 
     onAttributeOnlyRoll(event) {
@@ -198,6 +202,12 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
+    onThresholdChange = (event) => {
+        this.threshold = Number(event.currentTarget.value);
+
+        this.doGroupRoll();
+    };
+
     doRoll(parts, limit = {}, explode = false) {
         // Build custom roll to avoid dialog display.
         const {ShadowrunRoller} = game.shadowrun5e;
@@ -221,7 +231,8 @@ class SRGroupRollApp extends Application {
 
         return {
             pool,
-            netHits: roller.result,
+            hits: roller.result,
+            netHits: this.threshold > roller.result? 0 : roller.result - this.threshold,
             success: roller.result > 0,
             glitched: glitched,
             limit: limit.value ? limit.value : ''

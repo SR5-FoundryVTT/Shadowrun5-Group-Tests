@@ -42,10 +42,20 @@
         <div></div>
     </div>
 
+    <div class="grm-grid">
+        <div class="grm-label">Threshold</div>
+        <div class="grm-roll">
+            <span class="threshold-value">
+                <input name="input-threshold" value="{{threshold}}" type="text" style="width: 2em; text-align: center">
+            </span>
+        </div>
+    </div>
+
     <div class="grm-grid grm-tbl-cols grm-hdr">
         <div class="grm-name-col">Token</div>
         <div>Pool</div>
         <div>Limit</div>
+        <div>Hits</div>
         <div>Net-Hits</div>
         <div>Success</div>
         <div>Glitch</div>
@@ -55,6 +65,7 @@
         <div class="grm-name-col">{{token.name}}</div>
         <div>{{token.result.pool}}</div>
         <div>{{token.result.limit}}</div>
+        <div>{{token.result.hits}}</div>
         <div>{{token.result.netHits}}</div>
         <div>{{#if token.result.success}}X{{/if}}</div>
         <div>{{#if token.result.glitched}}X{{/if}}</div>
