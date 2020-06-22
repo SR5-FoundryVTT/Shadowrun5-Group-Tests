@@ -2,6 +2,8 @@
  * @author  taMiF
  *
  * TODO: Handlebar conditional to allow for selectedSkillId to be pre selected on subsequent renders
+ * TODO: find a way to get attribute keys from system for custom attribute rolls (spell vs rolls) instead of magic value strings.
+ *
  */
 
 
@@ -13,7 +15,11 @@ class SRGroupRollApp extends Application {
 
         this.selectedSkillId = null;
         this.selectedRoll = null;
+        this.selectedAttributesRoll = null;
         this.tokenResults = {};
+
+        this.tokens = [];
+
 
         SRGroupRollApp.isOpen = true;
 
@@ -76,10 +82,10 @@ class SRGroupRollApp extends Application {
         const data = token?.actor?.sheet?.getData();
         const skills = data?.data?.skills;
 
+        this.tokens = canvas.tokens.controlled;
 
         const tokenList = [];
-        const tokens = canvas.tokens.controlled;
-        tokens.forEach(token => {
+        this.tokens.forEach(token => {
             tokenList.push({
                 id: token.id,
                 name: token.data.name,
@@ -102,10 +108,15 @@ class SRGroupRollApp extends Application {
         html.find('.attribute-only-roll').click(this.onAttributeOnlyRoll);
         html.find('.soak-roll').click(this.onSoakRoll);
         html.find('.defense-roll').click(this.onDefenseRoll);
+        html.find('.magic-illusion-mana').click(this.onIllusionManaRoll);
+        html.find('.magic-illusion-physical').click(this.onIllusionPhysicalRoll);
+        html.find('.magic-combat-direct-mana').click(this.onCombatDirectManaRoll);
+        html.find('.magic-combat-direct-physical').click(this.onCombatDirectPhysicalRoll);
+        html.find('.magic-manipulation').click(this.onManipulationRoll);
+        html.find('.magic-perception-active').click(this.onPerceptionActiveRoll);
     }
 
     onAttributeOnlyRoll(event) {
-        console.error('onAttributeOnlyRoll', event);
         const {roll} = event.currentTarget.dataset;
         this.selectedRoll = roll;
         this.selectedSkillId = null;
@@ -124,6 +135,52 @@ class SRGroupRollApp extends Application {
         this.doGroupRoll();
     }
 
+    onIllusionManaRoll = (event)=> {
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['willpower'] = null;
+        this.selectedAttributesRoll['logic'] = null;
+
+        this.doGroupRoll();
+    }
+
+    onIllusionPhysicalRoll = (event)=> {
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['intuition'] = null;
+        this.selectedAttributesRoll['logic'] = null;
+
+        this.doGroupRoll();
+    }
+
+    onCombatDirectManaRoll = (event)=> {
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['willpower'] = null;
+
+        this.doGroupRoll();
+    }
+
+    onCombatDirectPhysicalRoll = (event)=> {
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['body'] = null;
+
+        this.doGroupRoll();
+    }
+
+    onManipulationRoll = (event)=> {
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['willpower'] = null;
+        this.selectedAttributesRoll['logic'] = null;
+
+        this.doGroupRoll();
+    }
+
+    onPerceptionActiveRoll = (event)=> {
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['willpower'] = null;
+        this.selectedAttributesRoll['logic'] = null;
+
+        this.doGroupRoll();
+    }
+
     changeSkillSelection(event) {
         console.error('changeSkillSelection');
         const skillId = event.target.value;
@@ -137,16 +194,22 @@ class SRGroupRollApp extends Application {
     }
 
     doRoll(parts, limit = {}, explode = false) {
-        console.error('doRoll', limit);
         // Build custom roll to avoid dialog display.
         const {ShadowrunRoller} = game.shadowrun5e;
         const formula = ShadowrunRoller.shadowrunFormula({parts, limit, explode});
-        if (!formula) {
-            return ;
+
+        // TODO: Zero Dice formulas are catched... but the error still appears... 0_o
+        if (!formula || !formula.length || formula[0] === '0') {
+            return;
         }
 
         const roller = new Roll(formula);
-        roller.roll();
+        try {
+            roller.roll();
+        } catch (Error) {
+            return {}
+        }
+
         const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
         const pool = roller.dice[0].rolls.length;
         const glitched = (glitchedDice / pool) >= 0.5;
@@ -202,15 +265,13 @@ class SRGroupRollApp extends Application {
                 this.tokenResults[token.id] = this.doRoll(parts);
             });
         } else if (this.selectedRoll) {
-            console.error(this.selectedRoll, canvas.tokens.controlled);
+            console.error('this.selectedRoll');
             this.tokenResults = {};
 
             canvas.tokens.controlled.forEach(token => {
                 const {actor} = token;
                 const {data} = actor.sheet.getData();
                 const {rolls} = data;
-
-                console.error(rolls, data);
 
                 if (!rolls[this.selectedRoll]) {
                     return;
@@ -219,8 +280,22 @@ class SRGroupRollApp extends Application {
 
                 this.tokenResults[token.id] = this.doRoll([pool]);
             })
+        } else if (this.selectedAttributesRoll) {
+            console.error('selectedAttributes', this.selectedAttributesRoll);
+            this.tokenResults = {};
+
+            this.tokens.forEach(token => {
+                const {actor} = token;
+                const parts = {};
+                Object.keys(this.selectedAttributesRoll).forEach(selectedAttribute => {
+                    const attribute = actor.findAttribute(selectedAttribute)
+                    parts[attribute.label] = attribute.value;
+                });
+
+                this.tokenResults[token.id] = this.doRoll(parts);
+            });
         }
-        console.error(this.tokenResults);
+
         this.render();
     }
 }

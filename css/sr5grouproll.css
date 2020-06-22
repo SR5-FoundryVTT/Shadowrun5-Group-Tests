@@ -18,6 +18,10 @@
   grid-template-columns: repeat(6, 1fr);
 }
 
+.grm-grid-magic {
+  grid-template-columns: repeat(6, 1fr);
+}
+
 .grm-label {
   justify-self: start;
   font-weight: bold;
