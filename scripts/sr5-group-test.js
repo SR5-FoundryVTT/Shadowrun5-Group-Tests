@@ -75,7 +75,6 @@ class SRGroupRollApp extends Application {
     }
 
     getData() {
-        console.error('getData', game);
         // Use token skills instead of system template due to labels missing on system templates.
         const token = canvas.tokens.controlled.length ? canvas.tokens.controlled[0] : undefined;
         const data = token?.actor?.sheet?.getData();
@@ -286,11 +285,9 @@ class SRGroupRollApp extends Application {
     }
 
     doGroupRoll() {
-        console.error('do Group Roll');
         let pool = 0;
 
         if (this.selectedSkillId) {
-            console.error('selectedSkill');
             this.tokenResults = {};
             const skillId = this.selectedSkillId;
             this.tokens.forEach(token => {
@@ -331,7 +328,6 @@ class SRGroupRollApp extends Application {
                 this.tokenResults[token.id] = this.doRoll(parts);
             });
         } else if (this.selectedRoll) {
-            console.error('this.selectedRoll');
             this.tokenResults = {};
 
             this.tokens.forEach(token => {
@@ -347,7 +343,6 @@ class SRGroupRollApp extends Application {
                 this.tokenResults[token.id] = this.doRoll([pool, this.modifier]);
             })
         } else if (this.selectedAttributesRoll) {
-            console.error('selectedAttributes', this.selectedAttributesRoll);
             this.tokenResults = {};
 
             this.tokens.forEach(token => {
