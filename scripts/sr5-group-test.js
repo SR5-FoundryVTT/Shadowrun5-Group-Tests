@@ -35,8 +35,6 @@ class SRGroupRollApp extends Application {
 
         this.onAttributeOnlyRoll = this.onAttributeOnlyRoll.bind(this);
         this.changeSkillSelection = this.changeSkillSelection.bind(this);
-        this.onSoakRoll = this.onSoakRoll.bind(this);
-        this.onDefenseRoll = this.onDefenseRoll.bind(this);
         this.doGroupRoll = this.doGroupRoll.bind(this);
         this.getData = this.getData.bind(this);
     }
@@ -98,7 +96,6 @@ class SRGroupRollApp extends Application {
             const skill = skills.active[skillId];
             skillList.push({...skill, id: skillId, selected: skillId === this.selectedSkillId});
         });
-        console.error(skillList);
 
         return {
             test: 'Hallo Test',
@@ -114,6 +111,7 @@ class SRGroupRollApp extends Application {
 
         html.find('[name="select-skill"]').change(this.changeSkillSelection);
         html.find('.attribute-only-roll').click(this.onAttributeOnlyRoll);
+        html.find('.surprise-roll').click(this.onSurpriseRoll);
         html.find('.soak-roll').click(this.onSoakRoll);
         html.find('.defense-roll').click(this.onDefenseRoll);
         html.find('.magic-illusion-mana').click(this.onIllusionManaRoll);
@@ -125,26 +123,52 @@ class SRGroupRollApp extends Application {
         html.find('[name=input-threshold]').change(this.onThresholdChange);
     }
 
+    resetRollData = () => {
+        this.selectedRoll = null;
+        this.selectedSkillId = null;
+        this.threshold = 0;
+        this.selectedAttributesRoll = null;
+    }
+
     onAttributeOnlyRoll(event) {
+        this.resetRollData();
+
         const {roll} = event.currentTarget.dataset;
         this.selectedRoll = roll;
-        this.selectedSkillId = null;
+
         this.doGroupRoll();
     }
 
-    onSoakRoll(event) {
+    onSurpriseRoll = (event) => {
+        this.resetRollData();
+
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['reaction'] = null;
+        this.selectedAttributesRoll['intuition'] = null;
+        this.threshold = 3;
+
+        this.doGroupRoll();
+    }
+
+    onSoakRoll = (event) => {
+        this.resetRollData();
+
         this.selectedRoll = 'soak';
-        this.selectedSkillId = null;
+
         this.doGroupRoll();
     }
 
-    onDefenseRoll(event) {
+    onDefenseRoll = (event) => {
+        this.resetRollData();
+
         this.selectedRoll = 'defense';
-        this.selectedSkillId = null;
+
         this.doGroupRoll();
     }
 
     onIllusionManaRoll = (event)=> {
+        this.resetRollData();
+
         this.selectedAttributesRoll = {};
         this.selectedAttributesRoll['willpower'] = null;
         this.selectedAttributesRoll['logic'] = null;
@@ -153,6 +177,8 @@ class SRGroupRollApp extends Application {
     }
 
     onIllusionPhysicalRoll = (event)=> {
+        this.resetRollData();
+
         this.selectedAttributesRoll = {};
         this.selectedAttributesRoll['intuition'] = null;
         this.selectedAttributesRoll['logic'] = null;
@@ -161,6 +187,8 @@ class SRGroupRollApp extends Application {
     }
 
     onCombatDirectManaRoll = (event)=> {
+        this.resetRollData();
+
         this.selectedAttributesRoll = {};
         this.selectedAttributesRoll['willpower'] = null;
 
@@ -168,6 +196,8 @@ class SRGroupRollApp extends Application {
     }
 
     onCombatDirectPhysicalRoll = (event)=> {
+        this.resetRollData();
+
         this.selectedAttributesRoll = {};
         this.selectedAttributesRoll['body'] = null;
 
@@ -175,6 +205,8 @@ class SRGroupRollApp extends Application {
     }
 
     onManipulationRoll = (event)=> {
+        this.resetRollData();
+
         this.selectedAttributesRoll = {};
         this.selectedAttributesRoll['willpower'] = null;
         this.selectedAttributesRoll['logic'] = null;
@@ -183,6 +215,8 @@ class SRGroupRollApp extends Application {
     }
 
     onPerceptionActiveRoll = (event)=> {
+        this.resetRollData();
+
         this.selectedAttributesRoll = {};
         this.selectedAttributesRoll['willpower'] = null;
         this.selectedAttributesRoll['logic'] = null;
@@ -191,13 +225,13 @@ class SRGroupRollApp extends Application {
     }
 
     changeSkillSelection(event) {
-        console.error('changeSkillSelection');
+        this.resetRollData();
+
         const skillId = event.target.value;
         if (!skillId) {
             return;
         }
         this.selectedSkillId = skillId;
-        this.selectedRoll = null;
 
         this.doGroupRoll();
     }
@@ -225,15 +259,16 @@ class SRGroupRollApp extends Application {
             return {}
         }
 
-        const glitchedDice = roller.dice[0].rolls.filter(roll => roll === 1).length;
+        const glitchedDice = roller.dice[0].rolls.filter(({roll}) => roll === 1).length;
         const pool = roller.dice[0].rolls.length;
         const glitched = (glitchedDice / pool) >= 0.5;
+        const netHits = this.threshold > roller.result? 0 : roller.result - this.threshold;
 
         return {
             pool,
             hits: roller.result,
-            netHits: this.threshold > roller.result? 0 : roller.result - this.threshold,
-            success: roller.result > 0,
+            netHits,
+            success: roller.result > 0 && roller.result - this.threshold >= 0,
             glitched: glitched,
             limit: limit.value ? limit.value : ''
         };

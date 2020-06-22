@@ -15,11 +15,15 @@
 }
 
 .grm-grid-common {
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .grm-grid-magic {
   grid-template-columns: repeat(6, 1fr);
+}
+
+.grm-grid-combat {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .grm-label {
