@@ -23,6 +23,7 @@ class SRGroupRollApp extends Application {
 
         this.tokens = [];
 
+        console.error(game);
 
         SRGroupRollApp.isOpen = true;
 
@@ -84,9 +85,12 @@ class SRGroupRollApp extends Application {
 
         const tokenList = [];
         this.tokens.forEach(token => {
+            const wounds = token.actor.getWounds() * -1;
             tokenList.push({
                 id: token.id,
                 name: token.data.name,
+                // blank for zero wounds.
+                wounds:  wounds ? wounds : '',
                 result: this.tokenResults[token.id]
             })
         });
@@ -299,6 +303,7 @@ class SRGroupRollApp extends Application {
                 }
                 const attribute = data.attributes[skill.attribute];
                 const limit = data.limits[attribute.limit];
+                const wounds = actor.getWounds() * -1;
 
                 if (skill.value > 0) {
                     pool = attribute.value + skill.value;
@@ -310,7 +315,9 @@ class SRGroupRollApp extends Application {
                     return;
                 }
 
-                this.tokenResults[token.id] = this.doRoll([pool, this.modifier], limit);
+                const parts = [pool, this.modifier, wounds];
+
+                this.tokenResults[token.id] = this.doRoll(parts, limit);
 
             });
         } else if (this.selectedRoll === 'soak') {
@@ -339,8 +346,10 @@ class SRGroupRollApp extends Application {
                     return;
                 }
                 pool = rolls[this.selectedRoll];
+                const wounds = actor.getWounds() * -1;
+                const parts = [pool, this.modifier, wounds];
 
-                this.tokenResults[token.id] = this.doRoll([pool, this.modifier]);
+                this.tokenResults[token.id] = this.doRoll(parts);
             })
         } else if (this.selectedAttributesRoll) {
             this.tokenResults = {};
@@ -355,6 +364,11 @@ class SRGroupRollApp extends Application {
 
                 if (this.modifier) {
                     parts['Modifier'] = this.modifier;
+                }
+
+                const wounds = actor.getWounds() * -1;
+                if (wounds) {
+                    parts['Wounds'] = wounds;
                 }
 
                 this.tokenResults[token.id] = this.doRoll(parts);

@@ -53,7 +53,7 @@
 }
 
 .grm-tbl-cols {
-  grid-template-columns: 1em repeat(6, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   overflow-y: scroll;
   scrollbar-width: none;
 }

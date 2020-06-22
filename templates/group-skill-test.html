@@ -66,6 +66,7 @@
 
     <div class="grm-grid grm-tbl-cols grm-hdr">
         <div class="grm-name-col">Token</div>
+        <div>Wounds</div>
         <div>Pool</div>
         <div>Limit</div>
         <div>Hits</div>
@@ -76,6 +77,7 @@
     <div class="grm-grid grm-tbl-cols grm-tbl-rows">
         {{#each tokens as |token|}}
         <div class="grm-name-col">{{token.name}}</div>
+        <div>{{token.wounds}}</div>
         <div>{{token.result.pool}}</div>
         <div>{{token.result.limit}}</div>
         <div>{{token.result.hits}}</div>
