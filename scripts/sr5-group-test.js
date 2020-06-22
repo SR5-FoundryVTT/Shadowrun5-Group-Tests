@@ -130,6 +130,7 @@ class SRGroupRollApp extends Application {
         html.find('.surprise-roll').click(this.onSurpriseRoll);
         html.find('.soak-roll').click(this.onSoakRoll);
         html.find('.defense-roll').click(this.onDefenseRoll);
+        html.find('.toxins-roll').click(this.onToxinsRoll);
         html.find('.magic-illusion-mana').click(this.onIllusionManaRoll);
         html.find('.magic-illusion-physical').click(this.onIllusionPhysicalRoll);
         html.find('.magic-combat-direct-mana').click(this.onCombatDirectManaRoll);
@@ -179,6 +180,16 @@ class SRGroupRollApp extends Application {
         this.resetRollData();
 
         this.selectedRoll = 'defense';
+
+        this.doGroupRoll();
+    }
+
+    onToxinsRoll = (event) => {
+        this.resetRollData();
+
+        this.selectedAttributesRoll = {};
+        this.selectedAttributesRoll['body'] = null;
+        this.selectedAttributesRoll['willpower'] = null;
 
         this.doGroupRoll();
     }
