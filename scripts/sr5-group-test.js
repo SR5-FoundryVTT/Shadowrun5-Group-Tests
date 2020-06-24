@@ -80,7 +80,7 @@ class SRGroupRollApp extends Application {
         options.height = "auto"; // TODO: Give pixel height allow for resize on more selection.
         options.resizable = true;
         options.id = "group-skill-test";
-        options.title = "Group Skill Test";
+        options.title = "The lazy GM";
         options.classes = ['sr5', 'srGroupRoll'];
         options.template = "modules/sr5-group-test/templates/group-skill-test.html";
         return options;
